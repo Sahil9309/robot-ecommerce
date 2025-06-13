@@ -12,6 +12,7 @@ import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import ContactPage from './pages/ContactPage';
+import ToolsPage from './pages/ToolsPage'; // Import the new Tools page
 import { Toaster } from 'react-hot-toast';
 
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -33,6 +34,7 @@ function App() {
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/tools" element={<ToolsPage />} />
             </Route>
           </Routes>
           <Toaster 
