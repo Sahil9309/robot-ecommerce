@@ -12,7 +12,7 @@ import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import ContactPage from './pages/ContactPage';
-import ToolsPage from './pages/ToolsPage'; // Import the new Tools page
+import ToolsPage from './pages/ToolsPage';
 import { Toaster } from 'react-hot-toast';
 
 axios.defaults.baseURL = 'http://localhost:5000';

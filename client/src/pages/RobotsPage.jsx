@@ -129,16 +129,21 @@ export default function RobotsPage() {
               </div>
             </div>
 
-            {/* 🔍 Search Input */}
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder="Search robots..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+{/* 🔍 Search Input */}
+<div className="mb-6 relative">
+  <input
+    type="text"
+    placeholder="Search robots..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-full px-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+    </svg>
+  </div>
+</div>
 
             {/* Robots Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
