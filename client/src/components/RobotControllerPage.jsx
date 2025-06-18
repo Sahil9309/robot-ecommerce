@@ -5,7 +5,7 @@ const RobotControllerPage = () => {
   const [isMoving, setIsMoving] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
 
-  const RENDER_URL = "https://robot-controller-2.onrender.com";
+  const RENDER_URL = "http://localhost:5000";
   const PHONE_IP_CAM_URL = "http://192.0.0.4:8080/video";
 
   useEffect(() => {
