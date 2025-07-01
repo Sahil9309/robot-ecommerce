@@ -47,6 +47,13 @@ export default function Header() {
                                 </NavLink>
                             )}
                             {user && (
+                                <NavLink to="/urdf-model" className={({ isActive }) =>
+                                    `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
+                                }>
+                                    Gestontrol
+                                </NavLink>
+                            )}
+                            {user && (
                                 <NavLink to="/orders" className={({ isActive }) =>
                                     `transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
                                 }>
@@ -109,6 +116,7 @@ export default function Header() {
                         <NavLink to="/contact">Contact Us</NavLink>
                         <NavLink to="/products">Products</NavLink>
                         {user && <NavLink to="/tools">Tools</NavLink>}
+                        {user && <NavLink to="/urdf-model">Gestontrol</NavLink>}
                         <Link to="/cart">Cart</Link>
                         {user && <Link to="/orders">My Orders</Link>}
                         {!user ? (
