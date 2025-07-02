@@ -39,28 +39,22 @@ export default function Header() {
                             }>
                                 Products
                             </NavLink>
-                            {user && (
-                                <NavLink to="/tools" className={({ isActive }) =>
-                                    `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
-                                }>
-                                    Tools
-                                </NavLink>
-                            )}
-                            {user && (
-                                <NavLink to="/urdf-model" className={({ isActive }) =>
-                                    `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
-                                }>
-                                    Gestontrol
-                                </NavLink>
-                            )}
-                            {user && (
-                                <NavLink to="/orders" className={({ isActive }) =>
-                                    `transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
-                                }>
-                                    My Orders
-                                </NavLink>
-                            )}
-                            {user && <CartIcon />} {/* Cart placed after My Orders */}
+                            <NavLink to="/tools" className={({ isActive }) =>
+                                `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
+                            }>
+                                Tools
+                            </NavLink>
+                            <NavLink to="/urdf-model" className={({ isActive }) =>
+                                `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
+                            }>
+                                Gestontrol
+                            </NavLink>
+                            <NavLink to="/orders" className={({ isActive }) =>
+                                `transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
+                            }>
+                                My Orders
+                            </NavLink>
+                            <CartIcon />
                         </div>
 
                         {/* Right side buttons */}
@@ -115,21 +109,21 @@ export default function Header() {
                     <div className="flex flex-col space-y-4 bg-white rounded-xl p-4 shadow-lg">
                         <NavLink to="/contact">Contact Us</NavLink>
                         <NavLink to="/products">Products</NavLink>
-                        {user && <NavLink to="/tools">Tools</NavLink>}
-                        {user && <NavLink to="/urdf-model">Gestontrol</NavLink>}
+                        <NavLink to="/tools">Tools</NavLink>
+                        <NavLink to="/urdf-model">Gestontrol</NavLink>
                         <Link to="/cart">Cart</Link>
-                        {user && <Link to="/orders">My Orders</Link>}
+                        <NavLink to="/orders">My Orders</NavLink>
                         {!user ? (
                             <div className="flex flex-col space-y-2">
-                                <Link to="/login" className="w-full px-4 py-2 text-center rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-50 transition-colors">
+                                <NavLink to="/login" className="w-full px-4 py-2 text-center rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-50 transition-colors">
                                     Login
-                                </Link>
-                                <Link to="/register" className="w-full px-4 py-2 text-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-200">
+                                </NavLink>
+                                <NavLink to="/register" className="w-full px-4 py-2 text-center rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-200">
                                     Sign Up
-                                </Link>
+                                </NavLink>
                             </div>
                         ) : (
-                            <Link to="/account" className="text-gray-700 hover:text-purple-600">My Account</Link>
+                            <NavLink to="/account" className="text-gray-700 hover:text-purple-600">My Account</NavLink>
                         )}
                     </div>
                 </div>

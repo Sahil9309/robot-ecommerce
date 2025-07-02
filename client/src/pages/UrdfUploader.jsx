@@ -9,6 +9,7 @@ import FileUploadPanel from '../components/FileUploadPanel';
 import RobotErrorBoundary from '../components/RobotErrorBoundary';
 import VideoRecorder from '../components/VideoRecorder';
 import VideoRecordingPanel from '../components/VideoRecordingPanel';
+import Footer from "../Footer"
 
 const UrdfUploader = () => {
     // File states
@@ -424,8 +425,9 @@ const UrdfUploader = () => {
     }, [cleanupBlobUrls]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white">
-            <div className="max-w-full mx-auto h-screen flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white flex flex-col relative">
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col max-w-full mx-auto w-full relative z-10">
                 <div className="flex-1 flex relative">
                     {/* File Upload Sidebar */}
                     <div className="w-80 bg-slate-900/80 backdrop-blur-sm border-r border-purple-500/20 p-4 overflow-y-auto">
@@ -446,31 +448,22 @@ const UrdfUploader = () => {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 relative">
-                        {/* Body Controller - This is the key component that connects MediaPipe to robot */}
-                        <BodyController 
-                            poseLandmarks={poseLandmarks}
-                            leftHandLandmarks={leftHandLandmarks}
-                            rightHandLandmarks={rightHandLandmarks}
-                            loadedRobotInstanceRef={loadedRobotInstanceRef}
-                            robotJointStatesRef={robotJointStatesRef}
-                        />
-
-                        {/* Top Right Controls - Fixed positioning and z-index */}
-                        <div className="absolute z-30 flex flex-col gap-4">
-                            {/* MediaPipe Camera Feed */}
-                            <div className="z-40">
+                    <div className="flex-1 relative overflow-x-hidden">
+                        {/* Top Right UI Container - Fixed positioning with proper z-index */}
+                        <div className="absolute top-0 right-0 z-50 flex flex-col gap-4">
+                            {/* Camera Feed - Always visible */}
+                            <div className="relative">
                                 <MediaPipeTracker
                                     onResults={handleMediaPipeResults}
                                     isTracking={isTracking}
-                                    width={320}
+                                    width={240}
                                     height={240}
                                 />
                             </div>
 
-                            {/* Video Recording Panel - Positioned below camera feed */}
+                            {/* Video Recording Panel - Only show when robot is loaded */}
                             {robotLoadedRef.current && (
-                                <div className="w-80 z-30">
+                                <div className="bg-slate-900/90 backdrop-blur-sm border border-purple-500/20 rounded-lg p-4">
                                     <VideoRecordingPanel
                                         recordingStatus={recordingStatus}
                                         recordedVideoBlob={recordedVideoBlob}
@@ -487,28 +480,43 @@ const UrdfUploader = () => {
                             )}
                         </div>
 
-{/* Debug Info - Positioned at top center */}
-{robotLoadedRef.current && (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/75 text-white p-3 rounded-lg text-sm z-40 backdrop-blur-sm border border-gray-700">
-        <div className="space-y-1">
-            <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span>Tracking: {isTracking ? 'Active' : 'Inactive'}</span>
-            </div>
-            <div className="text-gray-300">Joints: {Object.keys(robotJointStatesRef.current || {}).length}</div>
-            <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isRecording ? ' bg-gradient-to-br from-slate-900/50 to-purple-900/30' : 'bg-gray-500'}`}></div>
-                <span>Recording: {isRecording ? 'Active' : 'Inactive'}</span>
-            </div>
-            <div className="text-gray-300">Recorded Frames: {recordedJointStatesData.length}</div>
-            {poseLandmarks && (
-                <div className="text-green-400">Pose detected: {poseLandmarks.length} landmarks</div>
-            )}
-        </div>
-    </div>
-)}
+                        {/* Body Controller - Keep this as is */}
+                        <BodyController 
+                            poseLandmarks={poseLandmarks}
+                            leftHandLandmarks={leftHandLandmarks}
+                            rightHandLandmarks={rightHandLandmarks}
+                            loadedRobotInstanceRef={loadedRobotInstanceRef}
+                            robotJointStatesRef={robotJointStatesRef}
+                        />
 
-                        {/* Hidden canvas for video recording - Updated with Tailwind classes */}
+                        {/* Debug Info - Centered at top */}
+                        {robotLoadedRef.current && (
+                            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white p-3 rounded-lg text-sm z-40 border border-gray-600">
+                                <div className="grid grid-cols-2 gap-4 text-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full ${isTracking ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                                        <span className="text-xs">Tracking: {isTracking ? 'Active' : 'Inactive'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></div>
+                                        <span className="text-xs">Recording: {isRecording ? 'Active' : 'Inactive'}</span>
+                                    </div>
+                                    <div className="text-gray-300 text-xs">
+                                        Joints: {Object.keys(robotJointStatesRef.current || {}).length}
+                                    </div>
+                                    <div className="text-gray-300 text-xs">
+                                        Frames: {recordedJointStatesData.length}
+                                    </div>
+                                    {poseLandmarks && (
+                                        <div className="col-span-2 text-green-400 text-xs">
+                                            Pose: {poseLandmarks.length} landmarks detected
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Hidden canvas for video recording */}
                         <canvas
                             ref={drawingCanvasRef}
                             className="absolute inset-0 w-full h-full pointer-events-none opacity-0 -z-10"
@@ -529,14 +537,11 @@ const UrdfUploader = () => {
                                     onError={handleCanvasError}
                                     onCreated={({ gl }) => {
                                         gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                                        // Set up canvas for recording
                                         if (drawingCanvasRef.current) {
                                             const canvas = drawingCanvasRef.current;
                                             const ctx = canvas.getContext('2d');
                                             canvas.width = gl.domElement.width;
                                             canvas.height = gl.domElement.height;
-                                            
-                                            // Copy WebGL canvas to recording canvas periodically
                                             const copyCanvas = () => {
                                                 if (canvas && ctx && gl.domElement) {
                                                     ctx.drawImage(gl.domElement, 0, 0);
@@ -616,7 +621,7 @@ const UrdfUploader = () => {
                                         <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-600 to-cyan-600 rounded-full flex items-center justify-center">
                                             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
+                                            </svg>
                                         </div>
                                     )}
                                     <h3 className="text-2xl font-semibold text-white mb-2">

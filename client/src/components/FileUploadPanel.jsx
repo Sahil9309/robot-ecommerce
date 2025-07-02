@@ -82,7 +82,7 @@ const FileUploadPanel = ({
     }, [onClearFiles]);
 
     return (
-        <div className="w-80 bg-gradient-to-b from-slate-800/40 to-slate-900/60 backdrop-blur-sm border-r border-purple-500/20 p-6 overflow-y-auto">
+        <div className="w-80 min-w-0 max-w-full bg-gradient-to-b from-slate-800/40 to-slate-900/60 backdrop-blur-sm border-r border-purple-500/20 p-6 overflow-y-auto overflow-x-hidden">
             <h2 className="text-2xl font-semibold mb-6 text-cyan-300">File Upload</h2>
             
             {/* URDF File Input */}

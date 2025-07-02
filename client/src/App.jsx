@@ -15,6 +15,7 @@ import ContactPage from './pages/ContactPage';
 import ToolsPage from './pages/ToolsPage';
 import { Toaster } from 'react-hot-toast';
 import UrdfUploader from './pages/UrdfUploader.jsx'
+import Footer from './Footer'; // Import the Footer component
 
 axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.withCredentials = true;
@@ -36,7 +37,14 @@ function App() {
               <Route path="/payment-success" element={<PaymentSuccessPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/tools" element={<ToolsPage />} />
-              <Route path="/urdf-model" element={<UrdfUploader />} />
+              <Route
+                path="/urdf-model"
+                element={
+                  <>
+                    <UrdfUploader />
+                  </>
+                }
+              />
             </Route>
           </Routes>
           <Toaster 

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import axios from "axios"; // <-- Add this import
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -7,6 +8,9 @@ export default function ContactPage() {
     email: '',
     message: ''
   });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
 
   const contactInfo = {
     phone: "9763133251",
@@ -15,10 +19,19 @@ export default function ContactPage() {
     hours: "Mon - Fri — 10 am - 8 pm, Sat, Sun — Closed"
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
+    setSending(true);
+    setError('');
+    setSent(false);
+    try {
+      await axios.post('http://localhost:5000/api/contact', formData);
+      setSent(true);
+      setFormData({ name: '', email: '', message: '' });
+    } catch (err) {
+      setError('Failed to send message. Please try again later.');
+    }
+    setSending(false);
   };
 
   const handleChange = (e) => {
@@ -154,10 +167,13 @@ export default function ContactPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
+                disabled={sending}
                 className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                Send Message
+                {sending ? "Sending..." : "Send Message"}
               </motion.button>
+              {sent && <p className="text-green-600 mt-2">Message sent successfully!</p>}
+              {error && <p className="text-red-600 mt-2">{error}</p>}
             </form>
           </motion.div>
         </div>

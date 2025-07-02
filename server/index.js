@@ -1,4 +1,5 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const cors = require('cors');
 const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
@@ -19,7 +20,7 @@ app.use(cookieParser());
 
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5174',
+    origin: 'http://localhost:5173',
 }));
 
 const mongoURI = process.env.MONGO_URI;
@@ -166,6 +167,34 @@ app.get('/api/orders', async (req, res) => {
   } catch (err) {
     console.error('Error fetching orders:', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+  try {
+    // Configure your SMTP transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'sahiltalwekar123@gmail.com', // replace with your email
+        pass: 'sahil1234',   // use an app password, not your main password
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"${name}" <${email}>`,
+      to: 'sahiltalwekar123@gmail.com', // your email
+      subject: 'New Contact Form Message',
+      text: message,
+      html: `<p><b>Name:</b> ${name}</p>
+             <p><b>Email:</b> ${email}</p>
+             <p><b>Message:</b><br/>${message}</p>`,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

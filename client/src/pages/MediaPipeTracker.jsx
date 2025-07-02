@@ -1,4 +1,5 @@
-// src/pages/MediaPipeTracker.jsx
+// Improved MediaPipeTracker.jsx with better styling and performance
+
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Holistic } from '@mediapipe/holistic';
 import { Camera } from '@mediapipe/camera_utils';
@@ -19,11 +20,12 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
     
     const [initializationError, setInitializationError] = useState(null);
     const [cameraReady, setCameraReady] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(false);
 
     // Throttle frame processing to prevent overwhelming MediaPipe
     const FRAME_THROTTLE_MS = 33; // ~30 FPS max
 
-    // Function to draw landmarks on canvas
+    // Function to draw landmarks on canvas with improved colors
     const drawLandmarksOnCanvas = useCallback((results) => {
         const canvas = canvasRef.current;
         if (!canvas || !results || !isMountedRef.current) return;
@@ -46,49 +48,49 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
             ctx.scale(-1, 1);
             ctx.translate(-canvas.width, 0);
             
-            // Draw pose landmarks
+            // Draw pose landmarks with improved colors
             if (results.poseLandmarks) {
                 drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, {
-                    color: '#00FF00',
-                    lineWidth: 2
+                    color: '#00FF41', // Matrix green
+                    lineWidth: 3
                 });
                 drawLandmarks(ctx, results.poseLandmarks, {
-                    color: '#FF0000',
-                    lineWidth: 1,
-                    radius: 3
+                    color: '#FF0080', // Hot pink
+                    lineWidth: 2,
+                    radius: 4
                 });
             }
             
             // Draw left hand landmarks
             if (results.leftHandLandmarks) {
                 drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, {
-                    color: '#00FFFF',
+                    color: '#00BFFF', // Deep sky blue
                     lineWidth: 2
                 });
                 drawLandmarks(ctx, results.leftHandLandmarks, {
-                    color: '#0000FF',
+                    color: '#0080FF', // Blue
                     lineWidth: 1,
-                    radius: 2
+                    radius: 3
                 });
             }
             
             // Draw right hand landmarks
             if (results.rightHandLandmarks) {
                 drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS, {
-                    color: '#FFFF00',
+                    color: '#FFD700', // Gold
                     lineWidth: 2
                 });
                 drawLandmarks(ctx, results.rightHandLandmarks, {
-                    color: '#FF00FF',
+                    color: '#FF8C00', // Dark orange
                     lineWidth: 1,
-                    radius: 2
+                    radius: 3
                 });
             }
             
-            // Draw face landmarks (optional - can be overwhelming)
+            // Draw face landmarks (subtle)
             if (results.faceLandmarks && results.faceLandmarks.length > 0) {
                 drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION, {
-                    color: '#C0C0C070',
+                    color: '#FFFFFF20', // Very subtle white
                     lineWidth: 1
                 });
             }
@@ -141,7 +143,7 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                     smoothLandmarks: true,
                     enableSegmentation: false,
                     smoothSegmentation: false,
-                    refineFaceLandmarks: false, // Disable for better performance
+                    refineFaceLandmarks: false,
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
@@ -224,7 +226,6 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 cancelAnimationFrame(animationFrameRef.current);
             }
             
-            // Stop camera first
             if (cameraInstanceRef.current) {
                 try {
                     cameraInstanceRef.current.stop();
@@ -234,7 +235,6 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 cameraInstanceRef.current = null;
             }
             
-            // Close holistic after a small delay to ensure no frames are being processed
             setTimeout(() => {
                 if (holisticRef.current) {
                     try {
@@ -250,14 +250,12 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
         };
     }, [stableOnResults]);
 
-    // Simplified animation frame - only redraw when needed
     useEffect(() => {
         if (!cameraReady) return;
         
         const draw = () => {
             if (!isMountedRef.current) return;
             
-            // Only redraw if we have new results
             if (latestResultsRef.current) {
                 drawLandmarksOnCanvas(latestResultsRef.current);
             }
@@ -284,14 +282,25 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
         window.location.reload();
     }, []);
 
+    const toggleMinimize = useCallback(() => {
+        setIsMinimized(prev => !prev);
+    }, []);
+
     return (
         <div 
-            className="fixed top-4 right-4 z-50 bg-black rounded-lg overflow-hidden shadow-2xl border-2 border-gray-700"
-            style={{ width: `${width}px`, height: `${height}px` }}
+            className={`relative bg-black rounded-lg overflow-hidden shadow-2xl border-2 border-purple-500/30 transition-all duration-300 ${
+                isMinimized ? 'w-16 h-12' : ''
+            }`}
+            style={{ 
+                width: isMinimized ? '64px' : `${width}px`, 
+                height: isMinimized ? '48px' : `${height}px` 
+            }}
         >
             <video
                 ref={videoRef}
-                className="w-full h-full object-cover transform -scale-x-100"
+                className={`w-full h-full object-cover transform -scale-x-100 transition-opacity duration-300 ${
+                    isMinimized ? 'opacity-30' : 'opacity-100'
+                }`}
                 autoPlay
                 muted
                 playsInline
@@ -300,44 +309,51 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
             
             <canvas
                 ref={canvasRef}
-                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                className={`absolute top-0 left-0 w-full h-full pointer-events-none transition-opacity duration-300 ${
+                    isMinimized ? 'opacity-0' : 'opacity-100'
+                }`}
                 style={{ zIndex: 10 }}
             />
             
-            <div className="absolute top-1 left-1 bg-black bg-opacity-70 text-white px-1 py-0.5 rounded text-xs font-medium z-20">
-                Body Tracking
-            </div>
-            
-            <div className="absolute top-1 right-1 z-20">
-                <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500' : 'bg-red-500'} shadow-lg`}></div>
-            </div>
-            
-            {/* Landmark Legend */}
-            <div className="absolute bottom-1 left-1 bg-black bg-opacity-80 text-white px-1 py-0.5 rounded text-xs z-20">
-                <div className="flex items-center space-x-2">
-                    <div className="flex items-center">
-                        <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
-                        <span>Pose</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
-                        <span>L Hand</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-1"></div>
-                        <span>R Hand</span>
-                    </div>
+            {/* Header with controls */}
+            <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-900/80 to-blue-900/80 backdrop-blur-sm p-1 flex justify-between items-center z-20">
+                <div className="text-white text-xs font-semibold">Body Tracking</div>
+                <div className="flex items-center gap-1">
+                    <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500 animate-pulse' : 'bg-red-500'} shadow-lg`}></div>
+                    {/* Minimize/Expand button removed */}
                 </div>
             </div>
             
-            {cameraReady && (
-                <div className="absolute bottom-1 right-1 bg-green-600 bg-opacity-80 text-white px-1 py-0.5 rounded text-xs font-medium z-20">
+            {/* Legend - only show when not minimized */}
+            {!isMinimized && (
+                <div className="absolute bottom-1 left-1 bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs z-20">
+                    <div className="flex items-center space-x-3">
+                        <div className="flex items-center">
+                            <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
+                            <span>Pose</span>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                            <span>L Hand</span>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full mr-1"></div>
+                            <span>R Hand</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Status indicator */}
+            {cameraReady && !isMinimized && (
+                <div className="absolute bottom-1 right-1 bg-green-600/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium z-20">
                     Ready
                 </div>
             )}
             
+            {/* Error state */}
             {initializationError && (
-                <div className="absolute inset-0 bg-red-900 bg-opacity-90 flex items-center justify-center z-30">
+                <div className="absolute inset-0 bg-red-900/90 backdrop-blur-sm flex items-center justify-center z-30">
                     <div className="text-center text-white p-2">
                         <div className="mb-2">
                             <svg className="w-6 h-6 mx-auto mb-1 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,10 +372,11 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 </div>
             )}
             
+            {/* Loading state */}
             {!cameraReady && !initializationError && (
-                <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-30">
+                <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-30">
                     <div className="text-center text-white">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mx-auto mb-2"></div>
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500 mx-auto mb-2"></div>
                         <p className="text-xs">Loading...</p>
                     </div>
                 </div>
