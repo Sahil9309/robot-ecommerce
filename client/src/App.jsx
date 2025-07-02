@@ -17,7 +17,7 @@ import { Toaster } from 'react-hot-toast';
 import UrdfUploader from './pages/UrdfUploader.jsx'
 import Footer from './Footer'; // Import the Footer component
 
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
