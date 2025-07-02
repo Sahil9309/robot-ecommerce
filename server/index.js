@@ -20,7 +20,10 @@ app.use(cookieParser());
 
 app.use(cors({
     credentials: true,
-    origin: 'https://robot-ecommerce.vercel.app/',
+    origin: [
+        'https://robot-ecommerce.vercel.app',
+        'http://localhost:5173', // Vite default
+    ],
 }));
 
 const mongoURI = process.env.MONGO_URI;
