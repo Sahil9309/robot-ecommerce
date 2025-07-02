@@ -22,7 +22,7 @@ app.use(cors({
     credentials: true,
     origin: [
         'https://robot-ecommerce.vercel.app',
-        'http://localhost:5173', // Vite default
+        'http://localhost:5173',
     ],
 }));
 
@@ -72,7 +72,11 @@ app.post('/api/login', async (req, res) => {
         id: userDoc._id
       }, jwtSecret, {}, (err, token) => {
         if (err) throw err;
-        res.cookie('token', token).json(userDoc);
+        res.cookie('token', token, {
+          httpOnly: true,
+          sameSite: 'none',
+          secure: true,
+        }).json(userDoc);
       });
     } else {
       res.status(422).json('pass not ok');
@@ -96,7 +100,11 @@ app.get('/api/profile', (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
-  res.cookie('token', '').json(true);
+  res.cookie('token', '', {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+  }).json(true);
 });
 
 app.get('/api/robots', async (req, res) => {
@@ -201,4 +209,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-app.listen(5000);
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
