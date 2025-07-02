@@ -17,7 +17,12 @@ import { Toaster } from 'react-hot-toast';
 import UrdfUploader from './pages/UrdfUploader.jsx'
 import Footer from './Footer'; // Import the Footer component
 
-axios.defaults.baseURL = "https://robot-ecommerce-1.onrender.com";
+// Use environment variable for base URL, fallback to localhost for development
+axios.defaults.baseURL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://robot-ecommerce-1.onrender.com");
 axios.defaults.withCredentials = true;
 
 function App() {

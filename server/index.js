@@ -181,34 +181,6 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
-app.post('/api/contact', async (req, res) => {
-  const { name, email, message } = req.body;
-  try {
-    // Configure your SMTP transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'sahiltalwekar123@gmail.com', // replace with your email
-        pass: 'sahil1234',   // use an app password, not your main password
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"${name}" <${email}>`,
-      to: 'sahiltalwekar123@gmail.com', // your email
-      subject: 'New Contact Form Message',
-      text: message,
-      html: `<p><b>Name:</b> ${name}</p>
-             <p><b>Email:</b> ${email}</p>
-             <p><b>Message:</b><br/>${message}</p>`,
-    });
-
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
