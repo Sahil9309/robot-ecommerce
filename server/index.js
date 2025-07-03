@@ -116,21 +116,6 @@ app.get('/api/robots', async (req, res) => {
   }
 });
 
-app.post('/api/robots', async (req, res) => {
-  try {
-    const robotDoc = await Robot.create({
-      name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-      image: req.body.image,
-      category: req.body.category,
-      specifications: req.body.specifications
-    });
-    res.status(201).json(robotDoc);
-  } catch (error) {
-    res.status(422).json({ error: error.message });
-  }
-});
 
 app.post('/api/orders', async (req, res) => {
   try {
