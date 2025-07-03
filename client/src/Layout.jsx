@@ -10,7 +10,7 @@ export default function Layout() {
         <Header />
       </div>
       {/* Add top padding equal to header height (e.g., 80px) */}
-      <main className="flex-grow px-4 sm:px-6 py-8 pt-24">
+      <main className="flex-grow px-4 sm:px-6 py-8 pt-24 pb-32 b-32">
         <Outlet />
       </main>
       <Footer />

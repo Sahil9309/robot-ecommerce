@@ -1,5 +1,5 @@
 import { Link, Navigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "../UserContext.js";
 import toast from 'react-hot-toast';
@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [redirect, setRedirect] = useState(false);
+  const [orders, setOrders] = useState([]);
   const { setUser } = useContext(UserContext);
 
   async function handleLoginSubmit(ev) {
@@ -23,6 +24,18 @@ export default function LoginPage() {
       toast.error('Invalid credentials');
     }
   }
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await axios.get('/api/orders');
+        setOrders(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setOrders([]); // fallback to empty array on error
+      }
+    };
+    fetchOrders();
+  }, []);
 
   if (redirect) {
     return <Navigate to={'/'} />;

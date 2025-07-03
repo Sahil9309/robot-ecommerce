@@ -1,5 +1,5 @@
 // src/components/controls/BodyController.jsx
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import HeadController from './HeadController';
 import ArmController from './ArmController';
 import LegController from './LegController';
@@ -9,42 +9,25 @@ const BodyController = ({
     leftHandLandmarks, 
     rightHandLandmarks,
     loadedRobotInstanceRef, 
-    robotJointStatesRef // Use the ref directly
+    robotJointStatesRef
 }) => {
-    // Local state to track joint updates
-    const [, forceUpdate] = useState({});
-
-    // Stable utility function using useCallback
     const mapRange = useCallback((value, inMin, inMax, outMin, outMax) => {
         const clampedValue = Math.max(inMin, Math.min(value, inMax));
         return (clampedValue - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }, []);
 
-    // Function to update joint states using the ref
+    // Directly update the ref, no forceUpdate
     const updateRobotJointStates = useCallback((newJointStates) => {
-        if (!robotJointStatesRef || !robotJointStatesRef.current) {
-            console.warn('BodyController: robotJointStatesRef is not available');
-            return;
-        }
-
-        try {
-            // If newJointStates is a function (like setState), call it with current state
-            if (typeof newJointStates === 'function') {
-                const currentState = robotJointStatesRef.current || {};
-                const updatedState = newJointStates(currentState);
-                robotJointStatesRef.current = { ...currentState, ...updatedState };
-            } else {
-                // Direct object update
-                robotJointStatesRef.current = { 
-                    ...robotJointStatesRef.current, 
-                    ...newJointStates 
-                };
-            }
-
-            // Force a re-render to ensure the robot updates
-            forceUpdate({});
-        } catch (error) {
-            console.error('Error updating robot joint states:', error);
+        if (!robotJointStatesRef || !robotJointStatesRef.current) return;
+        if (typeof newJointStates === 'function') {
+            const currentState = robotJointStatesRef.current || {};
+            const updatedState = newJointStates(currentState);
+            robotJointStatesRef.current = { ...currentState, ...updatedState };
+        } else {
+            robotJointStatesRef.current = { 
+                ...robotJointStatesRef.current, 
+                ...newJointStates 
+            };
         }
     }, [robotJointStatesRef]);
 

@@ -4,7 +4,6 @@ import LandingPage from "./pages/LandingPage.jsx";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import axios from "axios";
-import ProfilePage from "./pages/ProfilePage.jsx";
 import {UserContextProvider} from "./UserContext.jsx";
 import RobotsPage from './pages/RobotsPage';
 import { CartProvider } from './context/CartContext';
@@ -18,11 +17,7 @@ import UrdfUploader from './pages/UrdfUploader.jsx'
 import Footer from './Footer'; // Import the Footer component
 
 // Use environment variable for base URL, fallback to localhost for development
-axios.defaults.baseURL =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://robot-ecommerce-1.onrender.com");
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -35,7 +30,6 @@ function App() {
               <Route index element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/account" element={<ProfilePage />} />
               <Route path="/products" element={<RobotsPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/orders" element={<OrdersPage />} />

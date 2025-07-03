@@ -1,11 +1,43 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import CartIcon from "./components/CartIcon";
-import { useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "./UserContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Header() {
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showLogout, setShowLogout] = useState(false);
+    const logoutRef = useRef(null);
+    const navigate = useNavigate();
+
+    // Hide logout popup when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (logoutRef.current && !logoutRef.current.contains(event.target)) {
+                setShowLogout(false);
+            }
+        }
+        if (showLogout) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showLogout]);
+
+    const handleLogout = async () => {
+        try {
+            await axios.post("/api/logout");
+            setUser(null);
+            toast.success("Logged out successfully!");
+            setShowLogout(false);
+            navigate("/");
+        } catch (e) {
+            toast.error("Logout failed. Try again.");
+        }
+    };
 
     return (
         <header className="bg-white shadow-lg sticky top-0 z-50">
@@ -76,15 +108,30 @@ export default function Header() {
                                 </NavLink>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2 ml-auto">
-                                <NavLink to="/account" className={({ isActive }) =>
-                                    `flex items-center gap-2 transition-colors ${isActive ? 'text-purple-600 font-medium' : 'text-gray-700 hover:text-purple-600'}`
-                                }>
+                            <div className="flex items-center gap-2 ml-auto relative">
+                                <button
+                                    onClick={() => setShowLogout((v) => !v)}
+                                    className="flex items-center gap-2 transition-colors text-gray-700 hover:text-purple-600 focus:outline-none relative"
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                     </svg>
                                     <span>{user.name}</span>
-                                </NavLink>
+                                </button>
+                                {showLogout && (
+                                    <div
+                                        ref={logoutRef}
+                                        className="absolute right-0 mt-2"
+                                        style={{ minWidth: "8rem" }}
+                                    >
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full px-4 py-2 text-center rounded-xl border-2 border-purple-600 text-purple-600 bg-white hover:bg-purple-50 transition-colors font-medium shadow"
+                                        >
+                                            Log out
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -123,7 +170,12 @@ export default function Header() {
                                 </NavLink>
                             </div>
                         ) : (
-                            <NavLink to="/account" className="text-gray-700 hover:text-purple-600">My Account</NavLink>
+                            <button
+                                onClick={handleLogout}
+                                className="w-full px-4 py-2 text-center rounded-xl text-red-600 hover:bg-gray-50 transition-colors"
+                            >
+                                Log out
+                            </button>
                         )}
                     </div>
                 </div>

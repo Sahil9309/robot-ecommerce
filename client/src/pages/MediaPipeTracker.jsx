@@ -1,4 +1,4 @@
-// Improved MediaPipeTracker.jsx with better styling and performance
+// Improved MediaPipeTracker.jsx with lower latency and more responsive hand tracking
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Holistic } from '@mediapipe/holistic';
@@ -17,84 +17,84 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
     const latestResultsRef = useRef(null);
     const isProcessingFrameRef = useRef(false);
     const lastFrameTimeRef = useRef(0);
-    
+
     const [initializationError, setInitializationError] = useState(null);
     const [cameraReady, setCameraReady] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
 
-    // Throttle frame processing to prevent overwhelming MediaPipe
-    const FRAME_THROTTLE_MS = 33; // ~30 FPS max
+    // Lower latency: allow up to 60 FPS (16ms per frame)
+    const FRAME_THROTTLE_MS = 16;
 
     // Function to draw landmarks on canvas with improved colors
     const drawLandmarksOnCanvas = useCallback((results) => {
         const canvas = canvasRef.current;
         if (!canvas || !results || !isMountedRef.current) return;
-        
+
         try {
             const ctx = canvas.getContext('2d');
             ctx.save();
-            
+
             // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // Set canvas size to match video
             const video = videoRef.current;
             if (video && video.videoWidth && video.videoHeight) {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
             }
-            
+
             // Mirror the canvas horizontally to match the flipped video
             ctx.scale(-1, 1);
             ctx.translate(-canvas.width, 0);
-            
-            // Draw pose landmarks with improved colors
+
+            // Draw pose landmarks
             if (results.poseLandmarks) {
                 drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, {
-                    color: '#00FF41', // Matrix green
+                    color: '#00FF41',
                     lineWidth: 3
                 });
                 drawLandmarks(ctx, results.poseLandmarks, {
-                    color: '#FF0080', // Hot pink
+                    color: '#FF0080',
                     lineWidth: 2,
                     radius: 4
                 });
             }
-            
+
             // Draw left hand landmarks
             if (results.leftHandLandmarks) {
                 drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, {
-                    color: '#00BFFF', // Deep sky blue
+                    color: '#00BFFF',
                     lineWidth: 2
                 });
                 drawLandmarks(ctx, results.leftHandLandmarks, {
-                    color: '#0080FF', // Blue
+                    color: '#0080FF',
                     lineWidth: 1,
                     radius: 3
                 });
             }
-            
+
             // Draw right hand landmarks
             if (results.rightHandLandmarks) {
                 drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS, {
-                    color: '#FFD700', // Gold
+                    color: '#FFD700',
                     lineWidth: 2
                 });
                 drawLandmarks(ctx, results.rightHandLandmarks, {
-                    color: '#FF8C00', // Dark orange
+                    color: '#FF8C00',
                     lineWidth: 1,
                     radius: 3
                 });
             }
-            
+
             // Draw face landmarks (subtle)
             if (results.faceLandmarks && results.faceLandmarks.length > 0) {
                 drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION, {
-                    color: '#FFFFFF20', // Very subtle white
+                    color: '#FFFFFF20',
                     lineWidth: 1
                 });
             }
-            
+
             ctx.restore();
         } catch (error) {
             console.error("[MediaPipeTracker] Error drawing landmarks:", error);
@@ -103,35 +103,29 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
 
     const stableOnResults = useCallback((results) => {
         if (!isMountedRef.current) return;
-        
+
         try {
-            // Store the latest results for drawing
             latestResultsRef.current = results;
-            
-            // Draw landmarks on canvas
             drawLandmarksOnCanvas(results);
-            
-            // Call the parent callback
             if (onResults) {
                 onResults(results);
             }
         } catch (error) {
             console.error("[MediaPipeTracker] Error in onResults callback:", error);
         } finally {
-            // Reset processing flag
             isProcessingFrameRef.current = false;
         }
     }, [onResults, drawLandmarksOnCanvas]);
 
     useEffect(() => {
         isMountedRef.current = true;
-        
+
         const initializeMediaPipe = async () => {
             if (isInitializedRef.current || !isMountedRef.current) return;
-            
+
             try {
                 setInitializationError(null);
-                
+
                 holisticRef.current = new Holistic({
                     locateFile: (file) => {
                         return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
@@ -149,9 +143,9 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 });
 
                 holisticRef.current.onResults(stableOnResults);
-                
+
                 await initializeCamera();
-                
+
                 isInitializedRef.current = true;
             } catch (error) {
                 console.error("[MediaPipeTracker] MediaPipe initialization error:", error);
@@ -165,8 +159,8 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
 
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
-                        width: { ideal: 640 },
-                        height: { ideal: 480 },
+                        width: { ideal: 320 },
+                        height: { ideal: 240 },
                         facingMode: 'user'
                     }
                 });
@@ -182,13 +176,12 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                             return;
                         }
 
-                        // Throttle frame processing
+                        // Throttle frame processing for lower latency
                         const now = Date.now();
                         if (now - lastFrameTimeRef.current < FRAME_THROTTLE_MS) {
                             return;
                         }
 
-                        // Skip if already processing a frame
                         if (isProcessingFrameRef.current) {
                             return;
                         }
@@ -196,15 +189,14 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                         try {
                             isProcessingFrameRef.current = true;
                             lastFrameTimeRef.current = now;
-                            
                             await holisticRef.current.send({ image: videoRef.current });
                         } catch (error) {
                             console.error("[MediaPipeTracker] Error sending frame:", error);
                             isProcessingFrameRef.current = false;
                         }
                     },
-                    width: 640,
-                    height: 480,
+                    width: 320,
+                    height: 240,
                     facingMode: 'user'
                 });
 
@@ -221,11 +213,11 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
         return () => {
             clearTimeout(timer);
             isMountedRef.current = false;
-            
+
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
-            
+
             if (cameraInstanceRef.current) {
                 try {
                     cameraInstanceRef.current.stop();
@@ -234,7 +226,7 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 }
                 cameraInstanceRef.current = null;
             }
-            
+
             setTimeout(() => {
                 if (holisticRef.current) {
                     try {
@@ -252,21 +244,21 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
 
     useEffect(() => {
         if (!cameraReady) return;
-        
+
         const draw = () => {
             if (!isMountedRef.current) return;
-            
+
             if (latestResultsRef.current) {
                 drawLandmarksOnCanvas(latestResultsRef.current);
             }
-            
+
             if (isMountedRef.current) {
                 animationFrameRef.current = requestAnimationFrame(draw);
             }
         };
-        
+
         animationFrameRef.current = requestAnimationFrame(draw);
-        
+
         return () => {
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
@@ -287,13 +279,13 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
     }, []);
 
     return (
-        <div 
+        <div
             className={`relative bg-black rounded-lg overflow-hidden shadow-2xl border-2 border-purple-500/30 transition-all duration-300 ${
                 isMinimized ? 'w-16 h-12' : ''
             }`}
-            style={{ 
-                width: isMinimized ? '64px' : `${width}px`, 
-                height: isMinimized ? '48px' : `${height}px` 
+            style={{
+                width: isMinimized ? '64px' : `${width}px`,
+                height: isMinimized ? '48px' : `${height}px`
             }}
         >
             <video
@@ -306,7 +298,7 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 playsInline
                 style={{ position: 'absolute', top: 0, left: 0 }}
             />
-            
+
             <canvas
                 ref={canvasRef}
                 className={`absolute top-0 left-0 w-full h-full pointer-events-none transition-opacity duration-300 ${
@@ -314,16 +306,15 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                 }`}
                 style={{ zIndex: 10 }}
             />
-            
+
             {/* Header with controls */}
             <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-900/80 to-blue-900/80 backdrop-blur-sm p-1 flex justify-between items-center z-20">
                 <div className="text-white text-xs font-semibold">Body Tracking</div>
                 <div className="flex items-center gap-1">
                     <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500 animate-pulse' : 'bg-red-500'} shadow-lg`}></div>
-                    {/* Minimize/Expand button removed */}
                 </div>
             </div>
-            
+
             {/* Legend - only show when not minimized */}
             {!isMinimized && (
                 <div className="absolute bottom-1 left-1 bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs z-20">
@@ -343,14 +334,14 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                     </div>
                 </div>
             )}
-            
+
             {/* Status indicator */}
             {cameraReady && !isMinimized && (
                 <div className="absolute bottom-1 right-1 bg-green-600/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium z-20">
                     Ready
                 </div>
             )}
-            
+
             {/* Error state */}
             {initializationError && (
                 <div className="absolute inset-0 bg-red-900/90 backdrop-blur-sm flex items-center justify-center z-30">
@@ -371,7 +362,7 @@ const MediaPipeTracker = ({ onResults, isTracking, width = 320, height = 240 }) 
                     </div>
                 </div>
             )}
-            
+
             {/* Loading state */}
             {!cameraReady && !initializationError && (
                 <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-30">

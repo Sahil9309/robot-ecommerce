@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function IndexPage() {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const navigate = useNavigate();
 
   const robotFeatures = [
     {
@@ -67,7 +69,10 @@ export default function IndexPage() {
                   Pioneering the next generation of intelligent robotics solutions for manufacturing, healthcare, logistics, and beyond.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <button className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-8 py-4 rounded-full font-bold hover:from-cyan-400 hover:to-blue-400 hover:scale-105 transition-all shadow-lg">
+                  <button
+                    className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-8 py-4 rounded-full font-bold hover:from-cyan-400 hover:to-blue-400 hover:scale-105 transition-all shadow-lg"
+                    onClick={() => navigate("/products")}
+                  >
                     Explore Our Robots
                   </button>
                   <button className="border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-slate-900 hover:scale-105 transition-all">
@@ -147,7 +152,7 @@ export default function IndexPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
               <span className="bg-gradient-to-r from-purple-900 to-indigo-600 bg-clip-text text-transparent">
-                Why Choose RoboTech?
+                Why Choose BoticsBay?
               </span>
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
@@ -338,8 +343,11 @@ export default function IndexPage() {
             Join the robotics revolution and stay ahead of the competition with our cutting-edge automation solutions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-8 py-4 rounded-full font-bold hover:from-cyan-400 hover:to-blue-400 hover:scale-105 transition-all shadow-lg">
-              Contact Sales
+            <button
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-8 py-4 rounded-full font-bold hover:from-cyan-400 hover:to-blue-400 hover:scale-105 transition-all shadow-lg"
+              onClick={() => navigate("/contact")}
+            >
+              Contact Us
             </button>
             <button className="border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-purple-900 hover:scale-105 transition-all">
               Schedule Demo
