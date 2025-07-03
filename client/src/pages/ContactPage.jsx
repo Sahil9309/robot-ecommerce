@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import axios from "axios"; // <-- Add this import
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,24 +13,20 @@ export default function ContactPage() {
 
   const contactInfo = {
     phone: "9763133251",
-    email: "sahiltalwekar123@gmail.com", // Add your email here
+    email: "sahiltalwekar123@gmail.com",
     location: "123 Robot Street, Tech City, TC 12345",
     hours: "Mon - Fri — 10 am - 8 pm, Sat, Sun — Closed"
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setSending(true);
     setError('');
-    setSent(false);
-    try {
-      await axios.post('/api/contact', formData);
+    setTimeout(() => {
       setSent(true);
+      setSending(false);
       setFormData({ name: '', email: '', message: '' });
-    } catch (err) {
-      setError('Failed to send message. Please try again later.');
-    }
-    setSending(false);
+    }, 1000);
   };
 
   const handleChange = (e) => {
