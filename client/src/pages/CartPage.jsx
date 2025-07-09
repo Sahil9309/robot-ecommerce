@@ -1,20 +1,21 @@
-import { useCart } from '../context/CartContext';
-import { useState, useContext } from 'react';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { UserContext } from '../UserContext';
-import toast from 'react-hot-toast';
+import { useCart } from "../context/CartContext";
+import { useState, useContext } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { useNavigate, Navigate } from "react-router-dom";
+import { UserContext } from "../UserContext";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, getCartTotal, clearCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, getCartTotal, clearCart, updateQuantity } =
+    useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    phone: ''
+    name: "",
+    address: "",
+    phone: "",
   });
 
   // Redirect to login if not authenticated
@@ -25,37 +26,37 @@ export default function CartPage() {
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleOnlinePayment = async () => {
     if (!formData.name || !formData.address || !formData.phone) {
-      toast.error('Please fill in all delivery details');
+      toast.error("Please fill in all delivery details");
       return;
     }
 
     setIsProcessing(true);
-    const toastId = toast.loading('Processing payment...');
+    const toastId = toast.loading("Processing payment...");
 
     try {
-      const response = await axios.post('/api/orders', {
+      const response = await axios.post("/api/orders", {
         items: cartItems,
         customerInfo: formData,
-        paymentMethod: 'online',
-        paymentStatus: 'paid',
-        totalAmount: getCartTotal()
+        paymentMethod: "online",
+        paymentStatus: "paid",
+        totalAmount: getCartTotal(),
       });
 
       if (response.data.success) {
-        toast.success('Payment successful!', {
+        toast.success("Payment successful!", {
           id: toastId,
         });
         clearCart();
-        navigate('/payment-success');
+        navigate("/payment-success");
       }
-    } catch (err) {
-      toast.error('Payment failed. Please try again.', {
+    } catch {
+      toast.error("Payment failed. Please try again.", {
         id: toastId,
       });
     } finally {
@@ -65,27 +66,27 @@ export default function CartPage() {
 
   const handleCashOnDelivery = async () => {
     if (!formData.name || !formData.address || !formData.phone) {
-      alert('Please fill in all delivery details');
+      alert("Please fill in all delivery details");
       return;
     }
 
     try {
-      const response = await axios.post('/api/orders', {
+      const response = await axios.post("/api/orders", {
         items: cartItems,
         customerInfo: formData,
-        paymentMethod: 'cod',
-        paymentStatus: 'pending',
-        totalAmount: getCartTotal()
+        paymentMethod: "cod",
+        paymentStatus: "pending",
+        totalAmount: getCartTotal(),
       });
 
       if (response.data.success) {
-        alert('Order placed successfully!');
+        alert("Order placed successfully!");
         clearCart();
-        navigate('/orders');
+        navigate("/orders");
       }
     } catch (err) {
-      console.error('Error:', err);
-      alert('Failed to place order. Please try again.');
+      console.error("Error:", err);
+      alert("Failed to place order. Please try again.");
     }
   };
 
@@ -97,8 +98,18 @@ export default function CartPage() {
           <div className="flex-grow lg:w-2/3">
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-                <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <svg
+                  className="w-8 h-8 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
                 </svg>
                 Shopping Cart ({cartItems.length})
               </h1>
@@ -110,17 +121,31 @@ export default function CartPage() {
                     animate={{ scale: 1 }}
                     className="mb-6"
                   >
-                    <svg className="w-32 h-32 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg
+                      className="w-32 h-32 mx-auto text-gray-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                      />
                     </svg>
                   </motion.div>
-                  <h3 className="text-2xl font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                  <p className="text-gray-500 mb-6">Looks like you haven't added any robots yet.</p>
+                  <h3 className="text-2xl font-medium text-gray-900 mb-2">
+                    Your cart is empty
+                  </h3>
+                  <p className="text-gray-500 mb-6">
+                    Looks like you haven't added any robots yet.
+                  </p>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700"
-                    onClick={() => window.location.href = '/products'}
+                    onClick={() => (window.location.href = "/products")}
                   >
                     Continue Shopping
                   </motion.button>
@@ -142,33 +167,66 @@ export default function CartPage() {
                       />
                       <div className="flex-grow space-y-2 w-full">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {item.name}
+                          </h3>
                           <p className="text-2xl font-bold text-blue-600">
-                            ${(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}
+                            $
+                            {(
+                              parseFloat(item.price) * parseInt(item.quantity)
+                            ).toFixed(2)}
                           </p>
                         </div>
-                        <p className="text-gray-600 text-sm">{item.description}</p>
+                        <p className="text-gray-600 text-sm">
+                          {item.description}
+                        </p>
                         <div className="flex justify-between items-center mt-4">
                           <div className="flex items-center gap-2">
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                              onClick={() =>
+                                updateQuantity(item._id, item.quantity - 1)
+                              }
                               className="bg-gray-200 hover:bg-gray-300 rounded-lg p-2 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M20 12H4"
+                                />
                               </svg>
                             </motion.button>
-                            <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                            <span className="w-8 text-center font-semibold">
+                              {item.quantity}
+                            </span>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                              onClick={() =>
+                                updateQuantity(item._id, item.quantity + 1)
+                              }
                               className="bg-gray-200 hover:bg-gray-300 rounded-lg p-2 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                />
                               </svg>
                             </motion.button>
                           </div>
@@ -176,8 +234,18 @@ export default function CartPage() {
                             onClick={() => removeFromCart(item._id)}
                             className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
                             </svg>
                             Remove
                           </button>
@@ -194,8 +262,10 @@ export default function CartPage() {
           {cartItems.length > 0 && (
             <div className="lg:w-1/3">
               <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
-                
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Order Summary
+                </h2>
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-base text-gray-600">
                     <span>Subtotal</span>
@@ -255,14 +325,30 @@ export default function CartPage() {
                     >
                       {isProcessing ? (
                         <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
                           </svg>
                           Processing...
                         </>
                       ) : (
-                        'Pay Online'
+                        "Pay Online"
                       )}
                     </motion.button>
                     <motion.button
