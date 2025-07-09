@@ -1,22 +1,12 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { UserContext } from "./UserContext.js";
 
-
-export function UserContextProvider({children}) {
-  const [user,setUser] = useState(null);
-  const [ready,setReady] = useState(false);
-  useEffect(() => {
-  if (!user) {
-    axios.get('/api/profile').then(({data}) => {
-      setUser(data);
-      setReady(true);
-    });
-  }
-}, [user]);
+export function UserContextProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [ready] = useState(true);
   return (
-    <UserContext.Provider value={{user,setUser,ready}}>
+    <UserContext.Provider value={{ user, setUser, ready }}>
       {children}
     </UserContext.Provider>
   );

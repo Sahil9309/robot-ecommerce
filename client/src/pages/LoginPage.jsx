@@ -1,44 +1,31 @@
 import { Link, Navigate } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../UserContext.js";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
-  const [orders, setOrders] = useState([]);
   const { setUser } = useContext(UserContext);
 
   async function handleLoginSubmit(ev) {
     ev.preventDefault();
     try {
-      const { data } = await axios.post('/api/login', { email, password });
+      const { data } = await axios.post("/api/login", { email, password });
       setUser(data);
-      toast.success('Welcome back!', {
-        icon: '👋',
+      toast.success("Welcome back!", {
+        icon: "👋",
       });
       setRedirect(true);
-    } catch (e) {
-      toast.error('Invalid credentials');
+    } catch {
+      toast.error("Invalid credentials");
     }
   }
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const { data } = await axios.get('/api/orders');
-        setOrders(Array.isArray(data) ? data : []);
-      } catch (error) {
-        setOrders([]); // fallback to empty array on error
-      }
-    };
-    fetchOrders();
-  }, []);
-
   if (redirect) {
-    return <Navigate to={'/'} />;
+    return <Navigate to={"/"} />;
   }
 
   return (
@@ -46,7 +33,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 relative">
         {/* Background Card with Blur Effect */}
         <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50"></div>
-        
+
         {/* Content */}
         <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 sm:p-12 border border-white/50">
           <div className="text-center mb-8">
