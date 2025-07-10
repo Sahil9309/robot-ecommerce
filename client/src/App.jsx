@@ -14,6 +14,9 @@ import ContactPage from './pages/ContactPage';
 import ToolsPage from './pages/ToolsPage';
 import { Toaster } from 'react-hot-toast';
 import UrdfUploader from './pages/UrdfUploader.jsx'
+// In your main App.jsx or main.jsx file
+import './config/axios.js'; // This sets up axios defaults
+// ... rest of your imports and app code
 
 
 // Use environment variable for base URL, fallback to localhost for development

@@ -9,7 +9,9 @@ export default function Header() {
   const { user, setUser } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const logoutRef = useRef(null);
+  const toolsRef = useRef(null);
   const navigate = useNavigate();
 
   // Hide logout popup when clicking outside
@@ -27,6 +29,21 @@ export default function Header() {
     };
   }, [showLogout]);
 
+  // Hide tools dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (toolsRef.current && !toolsRef.current.contains(event.target)) {
+        setShowToolsDropdown(false);
+      }
+    }
+    if (showToolsDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showToolsDropdown]);
+
   const handleLogout = async () => {
     try {
       await axios.post("/api/logout");
@@ -37,6 +54,14 @@ export default function Header() {
     } catch {
       toast.error("Logout failed. Try again.");
     }
+  };
+
+  const handleToolsDropdownToggle = () => {
+    setShowToolsDropdown(!showToolsDropdown);
+  };
+
+  const handleToolsOptionClick = () => {
+    setShowToolsDropdown(false);
   };
 
   return (
@@ -100,30 +125,52 @@ export default function Header() {
               >
                 Products
               </NavLink>
-              <NavLink
-                to="/tools"
-                className={({ isActive }) =>
-                  `flex items-center gap-2 transition-colors ${
-                    isActive
-                      ? "text-purple-600 font-medium"
-                      : "text-gray-700 hover:text-purple-600"
-                  }`
-                }
-              >
-                Tools
-              </NavLink>
-              <NavLink
-                to="/urdf-model"
-                className={({ isActive }) =>
-                  `flex items-center gap-2 transition-colors ${
-                    isActive
-                      ? "text-purple-600 font-medium"
-                      : "text-gray-700 hover:text-purple-600"
-                  }`
-                }
-              >
-                Gestontrol
-              </NavLink>
+              
+              {/* Tools Dropdown */}
+              <div className="relative" ref={toolsRef}>
+                <button
+                  onClick={handleToolsDropdownToggle}
+                  className="flex items-center gap-2 transition-colors text-gray-700 hover:text-purple-600"
+                >
+                  Tools
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      showToolsDropdown ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                {showToolsDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                    <Link
+                      to="/tools"
+                      onClick={handleToolsOptionClick}
+                      className="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                    >
+                      Controller
+                    </Link>
+                    <Link
+                      to="/urdf-model"
+                      onClick={handleToolsOptionClick}
+                      className="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                    >
+                      Gestontrol
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <NavLink
                 to="/orders"
                 className={({ isActive }) =>
@@ -230,7 +277,7 @@ export default function Header() {
           <div className="flex flex-col space-y-4 bg-white rounded-xl p-4 shadow-lg">
             <NavLink to="/contact">Contact Us</NavLink>
             <NavLink to="/products">Products</NavLink>
-            <NavLink to="/tools">Tools</NavLink>
+            <NavLink to="/tools">Controller</NavLink>
             <NavLink to="/urdf-model">Gestontrol</NavLink>
             <Link to="/cart">Cart</Link>
             <NavLink to="/orders">My Orders</NavLink>
