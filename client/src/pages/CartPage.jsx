@@ -99,7 +99,7 @@ export default function CartPage() {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
                 <svg
-                  className="w-8 h-8 text-blue-600"
+                  className="w-8 h-8 text-purple-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -144,7 +144,9 @@ export default function CartPage() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl 
+                    text-white bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 
+                    hover:to-indigo-700 transition-all duration-200 cursor-pointer"
                     onClick={() => (window.location.href = "/products")}
                   >
                     Continue Shopping

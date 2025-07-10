@@ -34,7 +34,7 @@ export default function IndexPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 mx-32">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
         {/* Animated background elements */}

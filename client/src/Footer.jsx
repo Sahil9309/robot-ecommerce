@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white py-8 shadow-inner z-40">
+    <footer className="bottom-0 left-0 w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white py-8 shadow-inner z-40">
       <div className="container mx-auto px-4 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
         {/* Left: Logo and copyright */}
         <div className="flex flex-col items-center gap-2 md:flex-row md:items-center md:gap-3">

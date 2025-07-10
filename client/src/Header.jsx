@@ -164,11 +164,8 @@ export default function Header() {
                 </NavLink>
               </div>
             ) : (
-              <div className="flex items-center gap-2 ml-auto relative">
-                <button
-                  onClick={() => setShowLogout((v) => !v)}
-                  className="flex items-center gap-2 transition-colors text-gray-700 hover:text-purple-600 focus:outline-none relative"
-                >
+              <div className="flex items-center gap-4 ml-auto">
+                <div className="flex items-center gap-2 text-gray-700">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -183,22 +180,14 @@ export default function Header() {
                       d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
                     />
                   </svg>
-                  <span>{user.name}</span>
+                  <span className="font-medium">{user.name}</span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-50 transition-colors cursor-pointer"
+                >
+                  Log out
                 </button>
-                {showLogout && (
-                  <div
-                    ref={logoutRef}
-                    className="absolute right-0 mt-2"
-                    style={{ minWidth: "8rem" }}
-                  >
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-center rounded-xl border-2 border-purple-600 text-purple-600 bg-white hover:bg-purple-50 transition-colors font-medium shadow"
-                    >
-                      Log out
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>

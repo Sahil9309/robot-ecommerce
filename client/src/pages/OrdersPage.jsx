@@ -58,7 +58,7 @@ export default function OrdersPage() {
                     </p>
                   </div>
                   <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-1">
-                    <p className="text-base sm:text-lg font-bold text-blue-600">
+                    <p className="text-base sm:text-lg font-bold text-purple-600">
                       Total: ${order.totalAmount}
                     </p>
                     <span
@@ -110,7 +110,7 @@ export default function OrdersPage() {
                                 Qty: {item.quantity}
                               </span>
                             </div>
-                            <p className="font-medium text-blue-600">
+                            <p className="font-medium text-purple-600">
                               ${(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>

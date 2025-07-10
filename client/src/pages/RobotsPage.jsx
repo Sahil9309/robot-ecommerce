@@ -73,7 +73,7 @@ export default function RobotsPage() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg whitespace-nowrap ${
                   selectedCategory === category
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-200'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -131,7 +131,9 @@ export default function RobotsPage() {
                   </span>
                   <button
                     onClick={() => handleAddToCart(robot)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium cursor-pointer 
+                    rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 
+                    hover:to-indigo-700 transition-all duration-200"
                   >
                     Add to Cart
                   </button>
